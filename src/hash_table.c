@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "hash_table.h"
 
@@ -119,3 +120,54 @@ length*/
 /* combines the hashes to determine final index. 
 Using: original hash_a value. added to attempt number multiplied by
 hash_b value +1 (so that it never returns 0 = just hash_a)*/
+
+void ht_insert(ht_hash_table* ht, const char* key, const char* value) {
+    ht_item* item = ht_new_item(key, value);
+    int index = ht_get_hash(item->key, ht->size, 0);
+    ht_item* cur_item = ht->items[index];
+    int i = 1;
+    while (!cur_item) {
+        //if(cur_item != &HT_DELETED_ITEM){ COMPLETE WHEN DELETE IS COMPLETE
+            if(strcmp(cur_item->key, key)==0){
+                ht_del_item(cur_item);
+                ht->items[index] = item;
+                return;
+            }
+       // }
+        index = ht_get_hash(item->key, ht->size, i);
+        cur_item = ht->items[index];
+        i++;
+    }
+    ht->items[index] = item;
+    ht->count++;
+}
+
+/*this function  inserts a key-value pair into the hash table.*/
+
+/*takes in a pointer ht to a ht_hash_table structure. (where the key-value pair will
+be inserted).
+ takes in the key value which is a string
+ takes in the value which is a string*/
+
+ /*it creates a new ht_item by calling ht_new_item
+ then uses gt_get_hash to find the index of the item to be inserted.*/
+
+ /*It then retrieves the current item stored at the  index in the hash table storing
+ it to cur_item*/
+
+ /* int i=1 initializes the attempt counter i to 1. This will be used in case
+ of rehashing needed.
+ The while loop will continue until cur_item is NULL */
+
+ /*it compares the key stored in cur_item to the key of the new item.
+ If they match it means the key is already present in the item and we need to replace the existing value with the new one.
+ hence ht_del_item of the cur_item
+ ht->items[index] = item; places the new item in the hash table at the correct index. replacing the old item. 
+ Then the function returns early as it inserted succesfully.*/
+
+ /*if the cur_item isn't NULL but the keys don't match, the function computes a new index using double hashing.
+ The index is recalculated for the next probe attempt. The function then checks the next slot in the hash table. 
+ Then attempt counter is incremented for the next iteration of the loop. */
+
+ /*Then it sets the ht-items[index] to be that of the new item and increments the counter holding the number
+ of items in the hash table*/
